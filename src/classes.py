@@ -1,5 +1,5 @@
 
-import random
+import random, time
 
 class User():
     def __init__(self, name, weight, height, age, gender, goal):
@@ -13,6 +13,9 @@ class User():
         self.meals = []
         self.activities = []
         self.calories_total = 0
+        self.calories_history = []
+        self.last_reset_time = time.time()
+
 
     def add_meal(self, food_obj):
         self.meals.append(food_obj)

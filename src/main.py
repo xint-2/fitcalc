@@ -1,4 +1,4 @@
-from user_data import login
+from user_data import login ,reset_daily
 
 def main():
     login()

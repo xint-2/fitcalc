@@ -25,9 +25,9 @@ def workout_menu():
     type = input("Aerobic or Anerobic activity?: ")
     my_activity = Activity(type, 0, name)
 
-    #if not name or type:
-        #print("Invalid input. Discarding")
-        #return None
+    if not name or not type:
+        print("Invalid input. Discarding")
+        return None
     
     while True:
         print("\n--- Workout Menu ---")

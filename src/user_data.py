@@ -1,4 +1,4 @@
-import sys, pickle
+import sys, pickle, os, time
 from classes import User
 from calories import add_user_meal
 from exercise import add_user_activity
@@ -57,7 +57,10 @@ def login():
     else:
         clear()
         home_page(username)
-        return users[username]  # return the user for later use
+    
+    reset_all_users_daily()
+
+    return users.get(username)  # return the user for later use
 
 
 def bmi_calc(weight, height): # for lbs
@@ -217,12 +220,11 @@ def edit_profile(username):
             case _:
                 clear()
                 print("\nInvalid option choose 1-6!")
-                break
 
-        with open('data.pickle', 'wb') as file:
-            pickle.dump(users, file)
+    with open('data.pickle', 'wb') as file:
+        pickle.dump(users, file)
         
-        print(f"{username}'s profile updated.\n")
+    print(f"{username}'s profile updated.\n")
         
 
 
@@ -292,7 +294,7 @@ def print_stats(username):
     print(f"Weight Goal: {user.goal} lbs")
     print(f"{user.name}'s BMR: {bmr}")
     print(f"{user.name}'s BMI: {bmi}")
-    print("----------------\n")
+    print("\n--------Meals-------\n")
     if user.meals:
         print("Meals eaten:")
         for meal in user.meals:
@@ -300,7 +302,7 @@ def print_stats(username):
     else:
         print("No meals logged yet.")
 
-    print("\n----------------")
+    print("\n-----Activities------\n")
 
     if user.activities:
         print("Activities done: ")
@@ -309,8 +311,66 @@ def print_stats(username):
     else:
         print("No activities logged")
 
-    print("\n----------------")
+    print("\n--- Total Calories ---\n")
     
-    print(f"\nNet total calories: {user.calories_total}")
+    print(f"Net total calories: {user.calories_total}")
 
+    print("\n---- History ----\n")
+
+    if user.calories_history:
+        for record in user.calories_history:
+            print(f"Date: {record['date']}, Calories: {record['calories']}")
+    else:
+        print("No history found.")
+
+def reset_daily(username):
+    try:
+        with open('data.pickle', 'rb') as file:
+            users = pickle.load(file)
+    except (FileNotFoundError, EOFError):
+        print("No user data found.")
+        return
+    
+    if username not in users:
+        print("User not found.")
+        return
+        
+    found_user = users[username]
+
+        
+    current_time = time.time()
+    day_seconds = 86400
+
+    if current_time - found_user.last_reset_time >= day_seconds:
+        found_user.calories_history.append({
+            "date": time.strftime("%Y-%m-%d", time.localtime(current_time)),
+            "calories": found_user.calories_total
+        })
+
+        found_user.meals.clear()
+        found_user.activities.clear()
+        found_user.calories_total = 0
+        found_user.last_reset_time = current_time
+        print(f"Daily data reset for {username}.")
+    else:
+        print(f"Less than 24 hourse since reset for {username}.")
+
+    with open('data.pickle', 'wb') as file:
+        pickle.dump(users, file)
+
+def reset_all_users_daily():
+    try:
+        with open('data.pickle', 'rb') as file:
+            users = pickle.load(file)
+    except (FileNotFoundError, EOFError):
+        print("No user data found.")
+        return
+        
+    for name in users:
+        reset_daily(name)
+
+            
+
+
+        
 
