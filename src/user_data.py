@@ -1,5 +1,61 @@
 import sys, pickle
 from classes import User
+from calories import *
+from utils import clear
+
+def get_basic_stats():
+    try:
+        with open('data.pickle', 'rb') as file:
+            users = pickle.load(file)
+    except (FileNotFoundError, EOFError):
+        users = {}
+
+    _username = get_input("Enter name: ")
+
+    if _username in users:
+        print("User already exists.")
+        return
+
+    _age = get_valid_age()
+    _gender = get_valid_gender()
+    _weight = get_valid_weight()
+    _height = get_valid_height()
+    _goal = get_valid_goal()
+
+    user = User(_username, _weight, _height, _age, _gender, _goal)
+    users[_username] = user
+
+    with open('data.pickle', 'wb') as file:
+        pickle.dump(users, file)
+
+    print("User saved successfully!")
+    
+    home_page(_username)
+
+
+def login():
+    clear()
+    print("Enter Q at any prompt to exit.")
+
+    try:
+        with open('data.pickle', 'rb') as file:
+            users = pickle.load(file)
+    except (FileNotFoundError, EOFError):
+        users = {}
+
+    username = input("What is your name?: ")
+
+    if username == "Q":
+        sys.exit
+    elif username not in users:
+        clear()
+        print("User not found. Creating a new one...\n")
+        get_basic_stats()
+    else:
+        clear()
+        home_page(username)
+        return users[username]  # return the user for later use
+
 
 def bmi_calc(weight, height): # for lbs
    if height is None or weight is None:
@@ -76,13 +132,18 @@ def get_valid_goal():
             return _goal
 
 def home_page(username):
+    clear()
+    print(f"\nWelcome back, {username}!")
     while True:
-        print("\n0) View stats")
+        print("\nHome Page")
+        print("----------------")
+        print("0) View stats")
         print("1) Add Workout")
         print("2) Add Food")
         print("3) Edit Profile")
         print("4) Delete profile")
-        print("Q) Exit program\n")
+        print("Q) Exit program")
+        print("------------------\n")
 
         option = input("Choose option 1-4: ")
     
@@ -92,15 +153,17 @@ def home_page(username):
             case "1":
                 pass
             case "2":
-                pass
+                add_user_meal(username)
             case "3":
                 edit_profile(username)
             case "4":
                 delete_profile(username)
             case ("Q"):
-                print("\nGoodbye!")
-                break
+                clear()
+                print("\nGoodbye!\n")
+                sys.exit()
             case _:
+                clear()
                 print("\nInvalid. choose a value 0-4! or Q to quit")
 
 def edit_profile(username):
@@ -115,18 +178,23 @@ def edit_profile(username):
         print(f" User '{username}' not found")
         return
     
+    clear()
+
     while True:
-        print("\n1) Back to Home")
+        print("\n----------------")
+        print("1) Back to Home")
         print("2) Edit Age")
         print("3) Edit Gender")
         print("4) Edit Weight")
         print("5) Edit Height")
-        print("6) Edit Goal\n")
+        print("6) Edit Goal")
+        print("----------------\n")
 
-        option = input("What value would you like to edit?: ")
+        option = input("What value would you like to edit? 2-6: ")
 
         match option:
             case "1":
+                clear()
                 break
             case "2":
                 users[username].age = get_valid_age()
@@ -139,6 +207,7 @@ def edit_profile(username):
             case "6":
                 users[username].goal = get_valid_goal()
             case _:
+                clear()
                 print("\nInvalid option choose 1-6!")
                 break
 
@@ -150,6 +219,7 @@ def edit_profile(username):
 
 
 def delete_profile(username):
+    clear()
     try:
         with open('data.pickle', 'rb') as file:
             users = pickle.load(file)
@@ -168,6 +238,9 @@ def delete_profile(username):
             with open("data.pickle", "wb") as file:
                 pickle.dump(users, file)
             print("\nUser deleted.")
+            clear()
+            login()
+
         elif y_n.upper() == "N":
             return
         else:
@@ -177,6 +250,7 @@ def delete_profile(username):
 
 
 def print_stats(username):
+    clear()
     with open('data.pickle', 'rb') as file:
         users = pickle.load(file)
 
@@ -188,8 +262,8 @@ def print_stats(username):
     bmi = bmi_calc(user.weight, user.height)
     bmr = get_bmr(user.weight, user.height, user.gender, user.age)
 
-
     print(f"\nStats for {user.name}:")
+    print("----------------")
     print(f"User ID: {user.user_id}")
     print(f"Gender: {user.gender}")
     print(f"Age: {user.age}")
@@ -197,4 +271,11 @@ def print_stats(username):
     print(f"Height: {user.height} inches")
     print(f"Weight Goal: {user.goal} lbs")
     print(f"{user.name}'s BMR: {bmr}")
-    print(f"{user.name}'s BMI: {bmi}\n")
+    print(f"{user.name}'s BMI: {bmi}")
+    print("----------------\n")
+    if user.meals:
+        print("Meals eaten:")
+        for meal in user.meals:
+            print(f"\n- {meal.meal_type}: {meal.meal_name} calories: ({meal.calories})")
+    else:
+        print("No meals logged yet.")
