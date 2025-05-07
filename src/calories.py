@@ -1,5 +1,5 @@
 import pickle
-from classes import User, Food, Activity
+from classes import Food
 from utils import clear
 
 
@@ -43,29 +43,30 @@ def menu():
         print("6. Save and return to home")
         print("-----------------")
 
-        choice = input("\nChoose an option: ")
+        choice = input("\nChoose an option 1-6: ")
 
-        if choice == "1":
-            add_food(my_food)
-        elif choice == "2":
-            clear()
-            print("\nFoods eaten:", my_food.show_foods())
-        elif choice == "3":
-            add_calories(my_food)
-        elif choice == "4":
-            clear()
-            print("\nTotal calories:", my_food.show_calories())
-        elif choice == "5":
-            clear()
-            print("\nMeal discarded.")
-            return None
-        elif choice == "6":
-            clear()
-            print("\nSaved")
-            return my_food
-        else:
-            clear()
-            print("\nInvalid option. Please choose again.")
+        match choice:
+            case "1":
+                add_food(my_food)
+            case "2":
+                clear()
+                print("\nFoods eaten:", my_food.show_foods())
+            case "3":
+                add_calories(my_food)
+            case "4":
+                clear()
+                print("\nTotal calories:", my_food.show_calories())
+            case "5":
+                clear()
+                print("\nMeal discarded.")
+                return None
+            case "6":
+                clear()
+                print("\nSaved")
+                return my_food
+            case _:
+                clear()
+                print("\nInvalid option. Please choose again.")
 
 def add_user_meal(username):
     try:
@@ -89,6 +90,7 @@ def add_user_meal(username):
     if food_obj is None:
         return
 
+    user.add_calories(food_obj.calories)
     user.add_meal(food_obj)
 
     with open('data.pickle', 'wb') as file:

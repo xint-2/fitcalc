@@ -11,13 +11,24 @@ class User():
         self.height = height
         self.goal = goal
         self.meals = []
+        self.activities = []
         self.calories_total = 0
 
     def add_meal(self, food_obj):
         self.meals.append(food_obj)
+
+    def add_calories(self, calorie_count):
+        self.calories_total += calorie_count
+
+    def add_activity(self, activity_obj):
+        self.activities.append(activity_obj)
+
+    def subtract_calories(self, burned_calories):
+        self.calories_total -= burned_calories
         
     def get_meal(self):
         return self.eaten
+    
     
 
 class Food():
@@ -41,14 +52,20 @@ class Food():
 
 class Activity():
     def __init__(self, act_type, burned_cal, act_name):
+        self.act_name = act_name
         self.act_type = act_type
         self.burned_cal = burned_cal
-        self.act_name = act_name
-        self.activities = []
+        self.exercise_list = []
        
-    def append_activty(self, act_name):
-        self.activities.append(act_name)
+    def append_exercise(self, act_name):
+        self.exercise_list.append(act_name)
+
+    def show_exercises(self):
+        return self.exercise_list
 
     def burned_counter(self, burned_cal):
         self.burned_cal += burned_cal
+
+    def show_burned_cal(self):
+        return self.burned_cal
 

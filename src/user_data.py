@@ -1,6 +1,7 @@
 import sys, pickle
 from classes import User
-from calories import *
+from calories import add_user_meal
+from exercise import add_user_activity
 from utils import clear
 
 def get_basic_stats():
@@ -35,7 +36,7 @@ def get_basic_stats():
 
 def login():
     clear()
-    print("Enter Q at any prompt to exit.")
+    print("\nEnter Q at any prompt to exit.")
 
     try:
         with open('data.pickle', 'rb') as file:
@@ -43,9 +44,11 @@ def login():
     except (FileNotFoundError, EOFError):
         users = {}
 
-    username = input("What is your name?: ")
+    username = input("\nWhat is your name?: ")
 
-    if username == "Q":
+    if username.upper() == "Q":
+        clear()
+        print("\nGoodbye!\n")
         sys.exit
     elif username not in users:
         clear()
@@ -141,22 +144,27 @@ def home_page(username):
         print("1) Add Workout")
         print("2) Add Food")
         print("3) Edit Profile")
-        print("4) Delete profile")
+        print("4) View profiles on device")
+        print("5) Delete profile")
         print("Q) Exit program")
         print("------------------\n")
 
         option = input("Choose option 1-4: ")
+        if isinstance(option, str):
+            option = option.upper()
     
         match option:
             case "0":
                 print_stats(username)
             case "1":
-                pass
+                add_user_activity(username)
             case "2":
                 add_user_meal(username)
             case "3":
                 edit_profile(username)
             case "4":
+                view_profiles()
+            case "5":
                 delete_profile(username)
             case ("Q"):
                 clear()
@@ -246,6 +254,18 @@ def delete_profile(username):
         else:
             print("Invalid. Y/N")
 
+def view_profiles():
+    clear()
+    print("Printing profiles")
+    try:
+        with open('data.pickle', 'rb') as file:
+            users = pickle.load(file)
+    except (FileNotFoundError, EOFError):
+        print("No user data found.")
+        return
+
+    for name in users:
+        print(f"Name: {name}")
 
 
 
@@ -276,6 +296,21 @@ def print_stats(username):
     if user.meals:
         print("Meals eaten:")
         for meal in user.meals:
-            print(f"\n- {meal.meal_type}: {meal.meal_name} calories: ({meal.calories})")
+            print(f"\n- {meal.meal_type}: {meal.meal_name} -> calories: ({meal.calories})")
     else:
         print("No meals logged yet.")
+
+    print("\n----------------")
+
+    if user.activities:
+        print("Activities done: ")
+        for activity in user.activities:
+            print(f"\n - {activity.act_type}: {activity.act_name} -> calories burned: ({activity.burned_cal})")
+    else:
+        print("No activities logged")
+
+    print("\n----------------")
+    
+    print(f"\nNet total calories: {user.calories_total}")
+
+
