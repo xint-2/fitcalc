@@ -1,9 +1,10 @@
-import sys, pickle, os, time
+import sys, pickle, time
 from classes import User
 from calories import add_user_meal
 from exercise import add_user_activity
 from utils import clear
 
+# get basic stats for user
 def get_basic_stats():
     try:
         with open('data.pickle', 'rb') as file:
@@ -33,7 +34,7 @@ def get_basic_stats():
     
     home_page(_username)
 
-
+# initial command. if user exists continue to home, else get_basic_stats
 def login():
     clear()
     print("\nEnter Q at any prompt to exit.")
@@ -44,7 +45,7 @@ def login():
     except (FileNotFoundError, EOFError):
         users = {}
 
-    username = input("\nWhat is your name?: ")
+    username = input("\nEnter login name: ")
 
     if username.upper() == "Q":
         clear()
@@ -58,16 +59,16 @@ def login():
         clear()
         home_page(username)
     
-    reset_all_users_daily()
 
     return users.get(username)  # return the user for later use
 
-
+# bmi calculation
 def bmi_calc(weight, height): # for lbs
    if height is None or weight is None:
        raise ValueError("Weight and Height must be provided")
    return round(703 * (weight / (height ** 2)), 2)
 
+# bmr calculation
 def get_bmr(weight, height, gender, age):
     kg_weight = float(weight) * 0.45359237
     cm_height = float(height) * 2.54
@@ -80,6 +81,7 @@ def get_bmr(weight, height, gender, age):
     
     return int(bmr)
 
+# prompt input and validate
 def get_input(prompt, cast_type=str):
     value = input(prompt)
     if value.upper() == "Q":
@@ -89,7 +91,7 @@ def get_input(prompt, cast_type=str):
     except ValueError:
         print(f"invalid input. Expected a {cast_type.__name__}.")
         return get_input(prompt, cast_type)
-
+# stats age validation
 def get_valid_age():
     while True:
         _age = get_input("Age: ", int)
@@ -99,14 +101,14 @@ def get_valid_age():
             print("99 and over, go see a doctor")
         else:
             return _age
-
+# stats gender validation
 def get_valid_gender():
     while True:
         _gender = get_input("Gender (M/F/O): ")
         if _gender.upper() in ["M", "F", "O"]:
             return _gender
         print("Invalid M, F or O")
-
+# stats weight validation
 def get_valid_weight():
     while True:
         _weight = get_input("Enter weight in lbs: ", int)
@@ -116,7 +118,7 @@ def get_valid_weight():
             print("weight cannot be 0")
         else:
             return _weight
-
+# stats height validation
 def get_valid_height():
     while True:
         _height = get_input("Enter height in inches: ", int)
@@ -126,7 +128,7 @@ def get_valid_height():
             print("Invalid height of 3 feet or less")
         else:
             return _height
-
+# stats goal validation
 def get_valid_goal():
     while True:
         _goal = get_input("Enter weight goal: ", int)
@@ -136,7 +138,7 @@ def get_valid_goal():
             print("goal weight cannot be 0")
         else:
             return _goal
-
+# after login page -> insert workout, meals, etc...
 def home_page(username):
     clear()
     print(f"\nWelcome back, {username}!")
@@ -172,11 +174,11 @@ def home_page(username):
             case ("Q"):
                 clear()
                 print("\nGoodbye!\n")
-                sys.exit()
+                reset_all_users_daily_exit()
             case _:
                 clear()
                 print("\nInvalid. choose a value 0-4! or Q to quit")
-
+# edit current users profile
 def edit_profile(username):
     try:
         with open('data.pickle', 'rb') as file:
@@ -214,7 +216,7 @@ def edit_profile(username):
             case "4":
                 users[username].weight = get_valid_weight()
             case "5":
-                users[username].height = get_valid_weight()
+                users[username].height = get_valid_height()
             case "6":
                 users[username].goal = get_valid_goal()
             case _:
@@ -225,9 +227,8 @@ def edit_profile(username):
         pickle.dump(users, file)
         
     print(f"{username}'s profile updated.\n")
-        
-
-
+ 
+# delete current users profile
 def delete_profile(username):
     clear()
     try:
@@ -255,10 +256,11 @@ def delete_profile(username):
             return
         else:
             print("Invalid. Y/N")
-
+# view all profiles on system
 def view_profiles():
     clear()
     print("Printing profiles")
+    print("-----------------\n")
     try:
         with open('data.pickle', 'rb') as file:
             users = pickle.load(file)
@@ -269,8 +271,7 @@ def view_profiles():
     for name in users:
         print(f"Name: {name}")
 
-
-
+# print basic_stats of user profile
 def print_stats(username):
     clear()
     with open('data.pickle', 'rb') as file:
@@ -294,7 +295,7 @@ def print_stats(username):
     print(f"Weight Goal: {user.goal} lbs")
     print(f"{user.name}'s BMR: {bmr}")
     print(f"{user.name}'s BMI: {bmi}")
-    print("\n--------Meals-------\n")
+    print("\n---- -Meals ----\n")
     if user.meals:
         print("Meals eaten:")
         for meal in user.meals:
@@ -302,7 +303,7 @@ def print_stats(username):
     else:
         print("No meals logged yet.")
 
-    print("\n-----Activities------\n")
+    print("\n---- Activities ----\n")
 
     if user.activities:
         print("Activities done: ")
@@ -311,7 +312,7 @@ def print_stats(username):
     else:
         print("No activities logged")
 
-    print("\n--- Total Calories ---\n")
+    print("\n---- Total Calories ----\n")
     
     print(f"Net total calories: {user.calories_total}")
 
@@ -323,6 +324,7 @@ def print_stats(username):
     else:
         print("No history found.")
 
+# sub-function to reset workout and meal data after 24hr for given user, saves some data and stores in history
 def reset_daily(username):
     try:
         with open('data.pickle', 'rb') as file:
@@ -353,12 +355,12 @@ def reset_daily(username):
         found_user.last_reset_time = current_time
         print(f"Daily data reset for {username}.")
     else:
-        print(f"Less than 24 hourse since reset for {username}.")
+        print(f"Less than 24 hours since reset for {username}.")
 
     with open('data.pickle', 'wb') as file:
         pickle.dump(users, file)
-
-def reset_all_users_daily():
+# function call on exit, runs reset_daily for all users and exits
+def reset_all_users_daily_exit():
     try:
         with open('data.pickle', 'rb') as file:
             users = pickle.load(file)
@@ -368,6 +370,8 @@ def reset_all_users_daily():
         
     for name in users:
         reset_daily(name)
+
+    sys.exit()
 
             
 

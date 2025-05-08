@@ -2,7 +2,7 @@ import pickle
 from classes import Food
 from utils import clear
 
-
+# add food to Food instance food_obj.food_list[]
 def add_food(food_obj):
     clear()
     meal = input("What food did you eat?: ").strip() # meal input str
@@ -11,7 +11,7 @@ def add_food(food_obj):
         return
     food_obj.append_food(meal) # append meal str to food_list 
     print(f"\n{meal} added to your food list.")
-
+# add calories to food_obj.calories
 def add_calories(food_obj):
     try:
         clear()
@@ -21,11 +21,11 @@ def add_calories(food_obj):
     except ValueError:
         print("Please enter a valid number.")
 
-
-
+# food menu -> add calories, food and view
 def menu():
     meal_type = input("Enter meal type (e.g., Breakfast, Lunch): ")
     meal_name = input("Enter initial meal name: ")
+
     my_food = Food(meal_type, 0, meal_name) # new Food class instance
     clear()
 
@@ -68,6 +68,7 @@ def menu():
                 clear()
                 print("\nInvalid option. Please choose again.")
 
+# adds food_obj to the users data
 def add_user_meal(username):
     try:
         with open('data.pickle', 'rb') as file: # open user file

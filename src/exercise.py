@@ -2,15 +2,15 @@ import pickle
 from classes import Activity
 from utils import clear
 
-def add_exercise(activity_obj): # append exercise to exercise list
+# append exercise to activity_obj.exercises_list[]
+def add_exercise(activity_obj):
     clear()
     exercise = input("What exercise did you do?: ").strip()
-    #exercise_type = input ("1) Anaerobic 2) Aerobic?: ")
     if not exercise:
         print("Invalid Exercise")
         return
     activity_obj.append_exercise(exercise)
-
+# add burned calories to activity_obj.calories
 def add_burned(activity_obj): # add calories to total burned calories
     clear()
     burned = int(input("Calories expended?: "))
@@ -18,7 +18,7 @@ def add_burned(activity_obj): # add calories to total burned calories
         print("Invalid Expendature")
         return
     activity_obj.burned_counter(burned)
-
+# menu for workout -> add workouts, calories burned and view
 def workout_menu():
     clear()
     name = input("What activity did you do?: ")
@@ -27,7 +27,7 @@ def workout_menu():
 
     if not name or not type:
         print("Invalid input. Discarding")
-        return None
+        return
     
     while True:
         print("\n--- Workout Menu ---")
@@ -62,7 +62,7 @@ def workout_menu():
             case _:
                 clear()
                 print("\nInvalid option choose again.")
-
+# adds the activity_obj to the user
 def add_user_activity(username):
     try:
         with open('data.pickle', 'rb') as file: # open user file
