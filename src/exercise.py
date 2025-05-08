@@ -1,13 +1,14 @@
 import pickle
 from classes import Activity
 from utils import clear
+from colorprint import *
 
 # append exercise to activity_obj.exercises_list[]
 def add_exercise(activity_obj):
     clear()
     exercise = input("What exercise did you do?: ").strip()
     if not exercise:
-        print("Invalid Exercise")
+        print_red("Invalid Exercise")
         return
     activity_obj.append_exercise(exercise)
 # add burned calories to activity_obj.calories
@@ -15,7 +16,7 @@ def add_burned(activity_obj): # add calories to total burned calories
     clear()
     burned = int(input("Calories expended?: "))
     if not burned:
-        print("Invalid Expendature")
+        print_red("Invalid Expendature")
         return
     activity_obj.burned_counter(burned)
 # menu for workout -> add workouts, calories burned and view
@@ -26,18 +27,18 @@ def workout_menu():
     my_activity = Activity(type, 0, name)
 
     if not name or not type:
-        print("Invalid input. Discarding")
+        print_red("Invalid input. Discarding")
         return
     
     while True:
-        print("\n--- Workout Menu ---")
+        print_cyan("\n--- Workout Menu ---")
         print("1) Add exercise to activity")
         print("2) View exercise list")
         print("3) Add calories expended")
         print("4) View calories expended")
         print("5) Discard and Exit")
         print("6) Save and Exit")
-        print("---------------------\n")
+        print_cyan("---------------------\n")
 
         choice = input("Choose an Option 1-6: ")
 
@@ -54,25 +55,26 @@ def workout_menu():
                 print("\nShow burned calories: ", my_activity.show_burned_cal())
             case "5":
                 clear()
-                print("Discarded.")
+                print_red("Discarded.")
                 return None
             case "6":
                 clear()
+                print_green("Saved.")
                 return my_activity
             case _:
                 clear()
-                print("\nInvalid option choose again.")
+                print_red("\nInvalid option choose again.")
 # adds the activity_obj to the user
 def add_user_activity(username):
     try:
         with open('data.pickle', 'rb') as file: # open user file
             users = pickle.load(file)
     except (FileNotFoundError, EOFError):
-        print("User not found.")
+        print_red("User not found.")
         return
     
     if username not in users:
-        print("User not found.")
+        print_red("User not found.")
         return
     
     user = users[username]

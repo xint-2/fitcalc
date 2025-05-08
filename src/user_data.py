@@ -3,6 +3,7 @@ from classes import User
 from calories import add_user_meal
 from exercise import add_user_activity
 from utils import clear
+from colorprint import *
 
 # get basic stats for user
 def get_basic_stats():
@@ -15,7 +16,7 @@ def get_basic_stats():
     _username = get_input("Enter name: ")
 
     if _username in users:
-        print("User already exists.")
+        print_yellow("User already exists.")
         return
 
     _age = get_valid_age()
@@ -30,7 +31,7 @@ def get_basic_stats():
     with open('data.pickle', 'wb') as file:
         pickle.dump(users, file)
 
-    print("User saved successfully!")
+    print_green("User saved successfully!")
     
     home_page(_username)
 
@@ -53,7 +54,7 @@ def login():
         sys.exit
     elif username not in users:
         clear()
-        print("User not found. Creating a new one...\n")
+        print_green("User not found. Creating a new one...\n")
         get_basic_stats()
     else:
         clear()
@@ -96,9 +97,9 @@ def get_valid_age():
     while True:
         _age = get_input("Age: ", int)
         if _age <= 13:
-            print("13 and younger to the pediatrics",)
+            print_yellow("13 and younger to the pediatrics",)
         elif _age >= 99:
-            print("99 and over, go see a doctor")
+            print_yellow("99 and over, go see a doctor")
         else:
             return _age
 # stats gender validation
@@ -113,9 +114,9 @@ def get_valid_weight():
     while True:
         _weight = get_input("Enter weight in lbs: ", int)
         if _weight > 999:
-            print("Invalid Weight, higher than four digits")
+            print_yellow("Invalid Weight, higher than four digits")
         elif _weight <= 0:
-            print("weight cannot be 0")
+            print_yellow("weight cannot be 0")
         else:
             return _weight
 # stats height validation
@@ -123,9 +124,9 @@ def get_valid_height():
     while True:
         _height = get_input("Enter height in inches: ", int)
         if _height > 108:
-            print("Invalid height over 9 feet")
+            print_yellow("Invalid height over 9 feet")
         elif _height < 36:
-            print("Invalid height of 3 feet or less")
+            print_yellow("Invalid height of 3 feet or less")
         else:
             return _height
 # stats goal validation
@@ -133,17 +134,17 @@ def get_valid_goal():
     while True:
         _goal = get_input("Enter weight goal: ", int)
         if _goal > 999:
-            print("Reach for the stars, land on the moon.")
+            print_yellow("Reach for the stars, land on the moon.")
         elif _goal <= 0:
-            print("goal weight cannot be 0")
+            print_yellow("goal weight cannot be 0")
         else:
             return _goal
 # after login page -> insert workout, meals, etc...
 def home_page(username):
     clear()
-    print(f"\nWelcome back, {username}!")
+    print_cyan(f"\nWelcome back, {username}!")
     while True:
-        print("\nHome Page")
+        print_blue("\nHome Page")
         print("----------------")
         print("0) View stats")
         print("1) Add Workout")
@@ -221,7 +222,7 @@ def edit_profile(username):
                 users[username].goal = get_valid_goal()
             case _:
                 clear()
-                print("\nInvalid option choose 1-6!")
+                print_red("\nInvalid option choose 1-6!")
 
     with open('data.pickle', 'wb') as file:
         pickle.dump(users, file)
@@ -240,7 +241,7 @@ def delete_profile(username):
     
     if username in users:
 
-        print(f"\ndo you really want to delete your profile {username}? Y/N")
+        print_red(f"\ndo you really want to delete your profile {username}? Y/N")
 
         y_n = input("Y/N?: ")
 
@@ -255,7 +256,7 @@ def delete_profile(username):
         elif y_n.upper() == "N":
             return
         else:
-            print("Invalid. Y/N")
+            print_red("Invalid. Y/N")
 # view all profiles on system
 def view_profiles():
     clear()
@@ -265,11 +266,14 @@ def view_profiles():
         with open('data.pickle', 'rb') as file:
             users = pickle.load(file)
     except (FileNotFoundError, EOFError):
-        print("No user data found.")
+        print_red("No user data found.")
         return
 
     for name in users:
         print(f"Name: {name}")
+    
+    input("\nPress Enter to continue")
+    clear()
 
 # print basic_stats of user profile
 def print_stats(username):
@@ -278,15 +282,15 @@ def print_stats(username):
         users = pickle.load(file)
 
     if username not in users:
-        print("User not found.")
+        print_red("User not found.")
         return
 
     user = users[username]
     bmi = bmi_calc(user.weight, user.height)
     bmr = get_bmr(user.weight, user.height, user.gender, user.age)
 
-    print(f"\nStats for {user.name}:")
-    print("----------------")
+    print_green(f"\nStats for {user.name}:")
+    print_green("----------------")
     print(f"User ID: {user.user_id}")
     print(f"Gender: {user.gender}")
     print(f"Age: {user.age}")
@@ -295,34 +299,37 @@ def print_stats(username):
     print(f"Weight Goal: {user.goal} lbs")
     print(f"{user.name}'s BMR: {bmr}")
     print(f"{user.name}'s BMI: {bmi}")
-    print("\n---- -Meals ----\n")
+    print_green("\n---- Meals ----\n")
     if user.meals:
         print("Meals eaten:")
         for meal in user.meals:
             print(f"\n- {meal.meal_type}: {meal.meal_name} -> calories: ({meal.calories})")
     else:
-        print("No meals logged yet.")
+        print_yellow("No meals logged yet.")
 
-    print("\n---- Activities ----\n")
+    print_green("\n---- Activities ----\n")
 
     if user.activities:
         print("Activities done: ")
         for activity in user.activities:
             print(f"\n - {activity.act_type}: {activity.act_name} -> calories burned: ({activity.burned_cal})")
     else:
-        print("No activities logged")
+        print_yellow("No activities logged")
 
-    print("\n---- Total Calories ----\n")
+    print_green("\n---- Total Calories ----\n")
     
     print(f"Net total calories: {user.calories_total}")
 
-    print("\n---- History ----\n")
+    print_green("\n---- History ----\n")
 
     if user.calories_history:
         for record in user.calories_history:
             print(f"Date: {record['date']}, Calories: {record['calories']}")
     else:
-        print("No history found.")
+        print_yellow("No history found.")
+
+    input("\nPress enter to continue")
+    clear()
 
 # sub-function to reset workout and meal data after 24hr for given user, saves some data and stores in history
 def reset_daily(username):
@@ -330,11 +337,11 @@ def reset_daily(username):
         with open('data.pickle', 'rb') as file:
             users = pickle.load(file)
     except (FileNotFoundError, EOFError):
-        print("No user data found.")
+        print_red("No user data found.")
         return
     
     if username not in users:
-        print("User not found.")
+        print_red("User not found.")
         return
         
     found_user = users[username]

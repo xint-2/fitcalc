@@ -1,13 +1,14 @@
 import pickle
 from classes import Food
 from utils import clear
+from colorprint import *
 
 # add food to Food instance food_obj.food_list[]
 def add_food(food_obj):
     clear()
     meal = input("What food did you eat?: ").strip() # meal input str
     if not meal:
-        print("Invalid food name")
+        print_red("Invalid food name")
         return
     food_obj.append_food(meal) # append meal str to food_list 
     print(f"\n{meal} added to your food list.")
@@ -19,7 +20,7 @@ def add_calories(food_obj):
         food_obj.calorie_counter(amount) # add calories to counter
         print(f"\n{amount} calories added.")
     except ValueError:
-        print("Please enter a valid number.")
+        print_red("Please enter a valid number.")
 
 # food menu -> add calories, food and view
 def menu():
@@ -30,18 +31,18 @@ def menu():
     clear()
 
     if not meal_type or not meal_name:
-        print("Invalid Input. Discarding")
+        print_red("Invalid Input. Discarding")
         return None
 
     while True:
-        print("\n--- Meal Menu ---")
+        print_cyan("\n--- Meal Menu ---")
         print("1. Add a food item")
         print("2. View food list")
         print("3. Add calories")
         print("4. View total calories")
         print("5. Exit And discard meal")
         print("6. Save and return to home")
-        print("-----------------")
+        print_cyan("-----------------")
 
         choice = input("\nChoose an option 1-6: ")
 
@@ -58,11 +59,11 @@ def menu():
                 print("\nTotal calories:", my_food.show_calories())
             case "5":
                 clear()
-                print("\nMeal discarded.")
+                print_red("\nMeal discarded.")
                 return None
             case "6":
                 clear()
-                print("\nSaved")
+                print_green("\nSaved")
                 return my_food
             case _:
                 clear()
@@ -74,11 +75,11 @@ def add_user_meal(username):
         with open('data.pickle', 'rb') as file: # open user file
             users = pickle.load(file)
     except (FileNotFoundError, EOFError):
-        print("User not found.")
+        print_red("User not found.")
         return
     
     if username not in users:
-        print("User not found.")
+        print_red("User not found.")
         return
     
     user = users[username]
