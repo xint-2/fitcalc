@@ -6,24 +6,42 @@ from colorprint import *
 # append exercise to activity_obj.exercises_list[]
 def add_exercise(activity_obj):
     clear()
+    print_cyan("Press Q to quit\n")
     exercise = input("What exercise did you do?: ").strip()
     if not exercise:
         print_red("Invalid Exercise")
+        return
+    if exercise.upper() == "Q":
         return
     activity_obj.append_exercise(exercise)
 # add burned calories to activity_obj.calories
 def add_burned(activity_obj): # add calories to total burned calories
     clear()
-    burned = int(input("Calories expended?: "))
+    print_cyan("Press Q to quit\n")
+    burned = input("Calories expended?: ")
     if not burned:
         print_red("Invalid Expendature")
         return
+    if not isinstance(burned, int):
+       if str(burned).upper() == "Q":
+           return
+       else:
+           clear()
+           print_red("\nOnly Integers.")
+           return
     activity_obj.burned_counter(burned)
 # menu for workout -> add workouts, calories burned and view
 def workout_menu():
     clear()
+    print_cyan("Enter Q to return home\n")
     name = input("What activity did you do?: ")
+    if name.upper() == "Q":
+        return
     type = input("Aerobic or Anerobic activity?: ")
+    if type.upper() == "Q":
+        return
+    
+
     my_activity = Activity(type, 0, name)
 
     if not name or not type:

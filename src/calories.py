@@ -6,29 +6,44 @@ from colorprint import *
 # add food to Food instance food_obj.food_list[]
 def add_food(food_obj):
     clear()
+    print_cyan("Press Q to quit\n")
     meal = input("What food did you eat?: ").strip() # meal input str
     if not meal:
         print_red("Invalid food name")
+        return
+    if meal.upper() == "Q":
         return
     food_obj.append_food(meal) # append meal str to food_list 
     print(f"\n{meal} added to your food list.")
 # add calories to food_obj.calories
 def add_calories(food_obj):
-    try:
-        clear()
-        amount = int(input("How many calories?: "))
-        food_obj.calorie_counter(amount) # add calories to counter
-        print(f"\n{amount} calories added.")
-    except ValueError:
-        print_red("Please enter a valid number.")
+    clear()
+    print_cyan("Press Q to quit\n")
+    amount = input("How many calories?: ")
+    if not isinstance(amount, int):
+        if str(amount).upper() == "Q":
+            return
+        else:
+            clear()
+            print_red("Only Integers.")
+            return
+    print(f"Calories added {amount}")
+    food_obj.calorie_counter(amount)
 
 # food menu -> add calories, food and view
 def menu():
+    clear()
+    print_cyan("Enter Q return home\n")
+
     meal_type = input("Enter meal type (e.g., Breakfast, Lunch): ")
+    if meal_type.upper() == "Q":
+        return
+    
     meal_name = input("Enter initial meal name: ")
+    if meal_name.upper() == "Q":
+        return
 
     my_food = Food(meal_type, 0, meal_name) # new Food class instance
-    clear()
 
     if not meal_type or not meal_name:
         print_red("Invalid Input. Discarding")
@@ -59,7 +74,7 @@ def menu():
                 print("\nTotal calories:", my_food.show_calories())
             case "5":
                 clear()
-                print_red("\nMeal discarded.")
+                print_red("\nDiscarded.")
                 return None
             case "6":
                 clear()

@@ -38,7 +38,7 @@ def get_basic_stats():
 # initial command. if user exists continue to home, else get_basic_stats
 def login():
     clear()
-    print("\nEnter Q at any prompt to exit.")
+    print_cyan("\nEnter Q at any prompt to exit.")
 
     try:
         with open('data.pickle', 'rb') as file:
@@ -50,7 +50,7 @@ def login():
 
     if username.upper() == "Q":
         clear()
-        print("\nGoodbye!\n")
+        print_magenta("\nGoodbye!\n")
         sys.exit
     elif username not in users:
         clear()
@@ -86,7 +86,8 @@ def get_bmr(weight, height, gender, age):
 def get_input(prompt, cast_type=str):
     value = input(prompt)
     if value.upper() == "Q":
-        sys.exit("Exiting program.")
+        print_red("Exiting.")
+        sys.exit()
     try:
         return cast_type(value)
     except ValueError:
@@ -155,7 +156,7 @@ def home_page(username):
         print("Q) Exit program")
         print("------------------\n")
 
-        option = input("Choose option 1-4: ")
+        option = input("Choose option 1-5: ")
         if isinstance(option, str):
             option = option.upper()
     
@@ -174,11 +175,11 @@ def home_page(username):
                 delete_profile(username)
             case ("Q"):
                 clear()
-                print("\nGoodbye!\n")
+                print_magenta("\nGoodbye!\n")
                 reset_all_users_daily_exit()
             case _:
                 clear()
-                print("\nInvalid. choose a value 0-4! or Q to quit")
+                print_red("\nInvalid. choose a value 0-5! or Q to quit")
 # edit current users profile
 def edit_profile(username):
     try:
@@ -193,15 +194,15 @@ def edit_profile(username):
         return
     
     clear()
-
     while True:
         print("\n----------------")
-        print("1) Back to Home")
+        print_green("1) Save and Exit")
         print("2) Edit Age")
         print("3) Edit Gender")
         print("4) Edit Weight")
         print("5) Edit Height")
         print("6) Edit Goal")
+        print_red("7) Discard and Exit")
         print("----------------\n")
 
         option = input("What value would you like to edit? 2-6: ")
@@ -220,14 +221,17 @@ def edit_profile(username):
                 users[username].height = get_valid_height()
             case "6":
                 users[username].goal = get_valid_goal()
+            case "7":
+                clear()
+                break
             case _:
                 clear()
                 print_red("\nInvalid option choose 1-6!")
 
-    with open('data.pickle', 'wb') as file:
-        pickle.dump(users, file)
-        
-    print(f"{username}'s profile updated.\n")
+    if option == "1":
+        with open('data.pickle', 'wb') as file:
+            pickle.dump(users, file)
+    
  
 # delete current users profile
 def delete_profile(username):
@@ -362,7 +366,7 @@ def reset_daily(username):
         found_user.last_reset_time = current_time
         print(f"Daily data reset for {username}.")
     else:
-        print(f"Less than 24 hours since reset for {username}.")
+        print_yellow(f"Less than 24 hours since reset for {username}.")
 
     with open('data.pickle', 'wb') as file:
         pickle.dump(users, file)
